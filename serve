@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+set -e
+
+# Link logs to stdout/stderr
+ln -sf /dev/stdout /var/log/nginx/access.log
+ln -sf /dev/stderr /var/log/nginx/error.log
+
+# Start NGINX
+nginx -c /opt/program/nginx.conf &
+
+# Launch Gunicorn (Flask app via wsgi.py)
+exec gunicorn \
+  --timeout "${MODEL_SERVER_TIMEOUT:-60}" \
+  -k sync \
+  -b unix:/tmp/gunicorn.sock \
+  -w "${MODEL_SERVER_WORKERS:-1}" \
+  wsgi:app
