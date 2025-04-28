@@ -17,6 +17,8 @@ RUN pip3 install --no-cache-dir \
      "accelerate>=0.26.0" \
      "fastapi==0.95.1" \
      "uvicorn[standard]==0.23.2" \
+     "uvicorn[standard]==0.23.2" \
+     "gunicorn==20.2.2" \
      "pillow==9.5.0"
 
 COPY . /opt/program
