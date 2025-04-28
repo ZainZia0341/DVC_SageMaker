@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 set -e
 
-# Link logs to stdout/stderr
 ln -sf /dev/stdout /var/log/nginx/access.log
 ln -sf /dev/stderr /var/log/nginx/error.log
 
-# Start NGINX
-nginx -c /opt/program/nginx.conf &
+# start nginx
+nginx -c $PWD/nginx.conf &
 
-# Launch Gunicorn (Flask app via wsgi.py)
+# run the FastAPI app under Gunicorn→Uvicorn
 exec gunicorn \
-  --timeout "${MODEL_SERVER_TIMEOUT:-60}" \
-  -k sync \
-  -b unix:/tmp/gunicorn.sock \
-  -w "${MODEL_SERVER_WORKERS:-1}" \
-  wsgi:app
+  --bind unix:/tmp/gunicorn.sock \
+  --workers ${MODEL_SERVER_WORKERS:-1} \
+  --timeout ${MODEL_SERVER_TIMEOUT:-60} \
+  --worker-class uvicorn.workers.UvicornWorker \
+  wsgi:application
