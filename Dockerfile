@@ -30,5 +30,6 @@ COPY app.py       .
 COPY inference.py .
 
 # ── Expose & launch ────────────────────────────────────────────────
-EXPOSE 8080
+# <<< drop the CUDA entrypoint, run uvicorn directly >>>
+ENTRYPOINT []
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]

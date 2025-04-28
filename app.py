@@ -1,22 +1,21 @@
 # app.py
 from fastapi import FastAPI, Request, Response
-import json
-import inference  # your inference.py
+import inference, json
 
 app = FastAPI()
-_model_store = inference.model_fn(None)
 
 @app.get("/ping")
 async def ping():
     return Response(status_code=200)
 
+_model_store = None
+
 @app.post("/invocations")
 async def invoke(request: Request):
-    # 1) read JSON
-    body = await request.body()
-    data = inference.input_fn(body, content_type="application/json")
-    # 2) predict
+    global _model_store
+    if _model_store is None:
+        _model_store = inference.model_fn(None)
+    data = inference.input_fn(await request.body(), content_type="application/json")
     pred = inference.predict_fn(data, _model_store)
-    # 3) format output
-    out_body, content_type = inference.output_fn(pred, accept="application/json")
-    return Response(content=out_body, media_type=content_type)
+    body, ctype = inference.output_fn(pred)
+    return Response(content=body, media_type=ctype)

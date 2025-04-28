@@ -1,45 +1,19 @@
-# Load Local LLM in 4 Bit Quantized Version
-torch==2.6.0
-transformers==4.49.0
-bitsandbytes==0.45.3
+# CUDA 11.8 PyTorch wheels
+-f https://download.pytorch.org/whl/cu118/torch_stable.html
 
-# Environment Variable Loading
-python-dotenv==1.0.1
+torch==2.1.0+cu118
+torchvision==0.16.0+cu118
+torchaudio==2.1.0+cu118
 
-# LangChain and LangGraph Modules
-langchain==0.3.20
-langchain-chroma==0.2.2
-langchain-community==0.3.19
-langchain-google-genai==2.0.11
-langchain-huggingface==0.1.2
-langgraph==0.3.8
+# Core dependencies
+numpy<2
+transformers==4.51.0
+bitsandbytes>=0.41.0
+accelerate>=0.26.0
 
-# PDF FILE READER
-pypdf==5.3.1
+# Web / serving
+fastapi==0.95.1
+uvicorn[standard]==0.23.2
 
-# FASTAPI
-fastapi==0.115.11
-uvicorn==0.34.0
-
-boto3==1.37.14
-
-# Optional: For compatibility with langchain-chroma & grpc
-numpy>=1.26.2,<2.0.0
-protobuf==5.26.1
-urllib3==1.26.18
-
-groq==0.22.0
-
-pymongo==4.9.2
-langchain-groq==0.2.1
-
-langchain-cohere==0.4.2
-langchain-mistralai==0.2.7
-
-
-pandas==2.2.3
-
-openpyxl==3.1.5
-
-
-sagemaker==2.243.3
+# Image handling
+pillow==9.5.0

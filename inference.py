@@ -22,9 +22,30 @@ model = AutoModelForCausalLM.from_pretrained(
 )
 processor = AutoProcessor.from_pretrained(model_id)  # This provides image processor + tokenizer
 
+_model = None
+_processor = None
+
 def model_fn(model_dir):
-    # Return the model and processor (the inference toolkit will call this to get the model)
-    return {"model": model, "processor": processor}
+    global _model, _processor
+    if _model is None:
+        model_id = os.getenv("HF_MODEL_ID")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_quant_type="nf4",
+        )
+        print("⏳ Loading model…", flush=True)
+        _model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            device_map="auto",
+            quantization_config=bnb_config,
+            torch_dtype=torch.bfloat16,
+            trust_remote_code=True,
+        )
+        _processor = AutoProcessor.from_pretrained(model_id)
+        print("✅ Model loaded", flush=True)
+    return {"model": _model, "processor": _processor}
 
 def input_fn(request_body, content_type="application/json"):
     # Parse the incoming request JSON to a Python dict
