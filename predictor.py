@@ -1,7 +1,7 @@
 from flask import Flask, request, Response
 import torch, json
 from transformers import AutoModelForCausalLM, AutoTokenizer
-from bitsandbytes import BitsAndBytesConfig
+from transformers import BitsAndBytesConfig
 
 # Load quantized model and tokenizer
 MODEL_ID = "unsloth/Llama-4-Scout-17B-16E-Instruct-unsloth-bnb-4bit"
