@@ -25,8 +25,11 @@ RUN pip3 install --no-cache-dir \
 WORKDIR /opt/program/NER
 COPY NER/ . 
 
-# 4) Make serve executable
-RUN chmod +x serve
+# 4) Remove CRLF line endings and make serve executable
+#    (you can also install dos2unix and run `dos2unix serve`–
+#     but a simple sed works without extra packages)
+RUN sed -i 's/\r$//' serve \
+    && chmod +x serve
 
 # 5) Expose SageMaker’s expected port
 EXPOSE 8080
