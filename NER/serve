@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+# 1) Link logs to stdout/stderr
+ln -sf /dev/stdout /var/log/nginx/access.log
+ln -sf /dev/stderr /var/log/nginx/error.log
+
+# 2) Start Nginx (in foreground)
+nginx -c /opt/program/NER/nginx.conf &
+
+# 3) Start Gunicorn using the UNIX socket as per docs
+exec gunicorn \
+  --workers ${MODEL_SERVER_WORKERS:-1} \
+  --timeout ${MODEL_SERVER_TIMEOUT:-60} \
+  --bind unix:/tmp/gunicorn.sock \
+  wsgi:app
