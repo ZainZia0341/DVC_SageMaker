@@ -3,6 +3,11 @@
 from sagemaker import image_uris, Session
 from sagemaker.huggingface import HuggingFaceModel
 
+
+from sagemaker.session import Session
+sess = Session()
+
+
 # 1) Choose the inference container
 image_uri = image_uris.retrieve(
     framework="pytorch",
@@ -13,7 +18,7 @@ image_uri = image_uris.retrieve(
     image_scope="inference",
 )
 
-sess = Session()
+# sess = Session()
 
 # 2) Create the Hugging Face Model, pointing to your multimodal code
 hf_model = HuggingFaceModel(
@@ -22,14 +27,18 @@ hf_model = HuggingFaceModel(
     entry_point="inference.py",
     source_dir="code/",
     image_uri=image_uri,
-    env={"SM_NUM_GPUS": "1"},
+    env={
+      "SM_NUM_GPUS":        "1",
+      "TRANSFORMERS_CACHE": "/tmp/model_cache",
+      "HF_HOME":            "/tmp/model_cache"
+    },
     sagemaker_session=sess,
 )
 
 # 3) Deploy to an endpoint
 predictor = hf_model.deploy(
     initial_instance_count=1,
-    instance_type="ml.g5.12xlarge	",
+    instance_type="ml.g5.12xlarge",
     endpoint_name="llama-3-2-vision-from-sagemaker-16th-try",
 )
 print("Multimodal endpoint:", predictor.endpoint_name)

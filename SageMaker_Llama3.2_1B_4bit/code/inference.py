@@ -33,6 +33,10 @@ def model_fn(model_dir, context=None):
         model=model,
         tokenizer=tokenizer,
         device_map="auto",
+        return_full_text=False,               # drop the prompt from the output
+        max_new_tokens=512,                   # generate up to 512 new tokens
+        eos_token_id=tokenizer.eos_token_id,  # stop when the model emits its EOS token
+        pad_token_id=tokenizer.eos_token_id,  # avoid “no pad token” warnings
     )
 
 def input_fn(request_body, request_content_type):
